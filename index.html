@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>I Love Tea</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --cream: #f5efe6;
+      --parchment: #ede0cc;
+      --warm: #c8a97e;
+      --amber: #a0714f;
+      --deep: #3b2314;
+      --ink: #1e120a;
+      --steam: rgba(200, 169, 126, 0.15);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background-color: var(--cream);
+      color: var(--ink);
+      font-family: 'Cormorant Garamond', serif;
+      overflow-x: hidden;
+      cursor: none;
+    }
+
+    /* Custom cursor */
+    .cursor {
+      position: fixed;
+      width: 10px; height: 10px;
+      background: var(--amber);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 9999;
+      transform: translate(-50%, -50%);
+      transition: transform 0.1s ease, opacity 0.2s;
+      mix-blend-mode: multiply;
+    }
+    .cursor-ring {
+      position: fixed;
+      width: 30px; height: 30px;
+      border: 1px solid var(--warm);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 9998;
+      transform: translate(-50%, -50%);
+      transition: transform 0.3s ease, width 0.3s, height 0.3s;
+    }
+
+    /* Noise texture overlay */
+    body::before {
+      content: '';
+      position: fixed; inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 1000;
+      opacity: 0.5;
+    }
+
+    /* ─── HERO ─────────────────────────────────────────── */
+    .hero {
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      position: relative;
+      overflow: hidden;
+      background: radial-gradient(ellipse 80% 60% at 50% 60%, #e8d5b7 0%, var(--cream) 70%);
+    }
+
+    /* Decorative rings */
+    .ring {
+      position: absolute;
+      border-radius: 50%;
+      border: 1px solid var(--parchment);
+      animation: expand 8s ease-out infinite;
+      opacity: 0;
+    }
+    .ring:nth-child(1) { width: 300px; height: 300px; animation-delay: 0s; }
+    .ring:nth-child(2) { width: 500px; height: 500px; animation-delay: 2s; }
+    .ring:nth-child(3) { width: 700px; height: 700px; animation-delay: 4s; }
+    .ring:nth-child(4) { width: 900px; height: 900px; animation-delay: 6s; }
+
+    @keyframes expand {
+      0%   { transform: scale(0.6); opacity: 0.5; }
+      100% { transform: scale(1.4); opacity: 0; }
+    }
+
+    /* Steam paths */
+    .steam-container {
+      position: absolute;
+      bottom: 38%;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 18px;
+      pointer-events: none;
+    }
+    .steam-line {
+      width: 2px;
+      height: 60px;
+      background: linear-gradient(to top, var(--warm), transparent);
+      border-radius: 2px;
+      animation: steamRise 3s ease-in-out infinite;
+      opacity: 0.6;
+    }
+    .steam-line:nth-child(2) { animation-delay: 0.5s; height: 80px; }
+    .steam-line:nth-child(3) { animation-delay: 1s; height: 50px; }
+
+    @keyframes steamRise {
+      0%   { transform: translateY(0) scaleX(1); opacity: 0.6; }
+      50%  { transform: translateY(-20px) scaleX(1.5); opacity: 0.3; }
+      100% { transform: translateY(-40px) scaleX(0.5); opacity: 0; }
+    }
+
+    /* Teacup SVG */
+    .teacup-wrap {
+      position: absolute;
+      bottom: 28%;
+      left: 50%;
+      transform: translateX(-50%);
+      animation: float 5s ease-in-out infinite;
+    }
+    @keyframes float {
+      0%, 100% { transform: translateX(-50%) translateY(0); }
+      50%       { transform: translateX(-50%) translateY(-12px); }
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 2;
+      text-align: center;
+      padding: 2rem;
+      animation: fadeUp 1.4s cubic-bezier(0.16, 1, 0.3, 1) both;
+    }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(40px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .eyebrow {
+      font-family: 'Cormorant Garamond', serif;
+      font-weight: 300;
+      font-style: italic;
+      letter-spacing: 0.35em;
+      font-size: 0.85rem;
+      color: var(--amber);
+      text-transform: uppercase;
+      margin-bottom: 1.2rem;
+      animation: fadeUp 1.4s 0.2s cubic-bezier(0.16,1,0.3,1) both;
+    }
+
+    h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(4rem, 12vw, 9rem);
+      font-weight: 400;
+      line-height: 0.9;
+      color: var(--deep);
+      margin-bottom: 0.3em;
+      animation: fadeUp 1.4s 0.4s cubic-bezier(0.16,1,0.3,1) both;
+    }
+    h1 em {
+      display: block;
+      font-style: italic;
+      color: var(--amber);
+    }
+
+    .subtitle {
+      font-size: 1.15rem;
+      font-weight: 300;
+      letter-spacing: 0.05em;
+      color: var(--amber);
+      margin-top: 1.5rem;
+      max-width: 380px;
+      margin-inline: auto;
+      line-height: 1.7;
+      animation: fadeUp 1.4s 0.6s cubic-bezier(0.16,1,0.3,1) both;
+    }
+
+    .scroll-hint {
+      position: absolute;
+      bottom: 2.5rem;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.7rem;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--warm);
+      animation: fadeUp 1s 1.2s both;
+    }
+    .scroll-line {
+      width: 1px;
+      height: 50px;
+      background: linear-gradient(to bottom, var(--warm), transparent);
+      animation: scrollPulse 2s ease-in-out infinite;
+    }
+    @keyframes scrollPulse {
+      0%, 100% { transform: scaleY(1); opacity: 1; }
+      50%       { transform: scaleY(0.5); opacity: 0.4; }
+    }
+
+    /* ─── VARIETIES ─────────────────────────────────────── */
+    .section {
+      padding: 8rem 2rem;
+      max-width: 1100px;
+      margin-inline: auto;
+    }
+
+    .section-label {
+      font-style: italic;
+      letter-spacing: 0.3em;
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      color: var(--warm);
+      margin-bottom: 3rem;
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+    }
+    .section-label::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--parchment);
+      max-width: 200px;
+    }
+
+    .teas-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 3px;
+      background: var(--parchment);
+    }
+
+    .tea-card {
+      background: var(--cream);
+      padding: 3rem 2rem;
+      position: relative;
+      overflow: hidden;
+      transition: background 0.4s;
+      cursor: none;
+    }
+    .tea-card:hover { background: var(--parchment); }
+    .tea-card::before {
+      content: attr(data-num);
+      position: absolute;
+      top: 1.5rem; right: 2rem;
+      font-family: 'Playfair Display', serif;
+      font-size: 4rem;
+      color: var(--parchment);
+      transition: color 0.4s;
+      line-height: 1;
+    }
+    .tea-card:hover::before { color: var(--warm); }
+
+    .tea-dot {
+      width: 40px; height: 40px;
+      border-radius: 50%;
+      margin-bottom: 2rem;
+      transition: transform 0.4s;
+    }
+    .tea-card:hover .tea-dot { transform: scale(1.2); }
+
+    .tea-card h3 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.6rem;
+      font-weight: 400;
+      margin-bottom: 0.8rem;
+      color: var(--deep);
+    }
+    .tea-card p {
+      font-size: 0.95rem;
+      line-height: 1.8;
+      color: var(--amber);
+      font-weight: 300;
+    }
+
+    /* ─── QUOTE ─────────────────────────────────────────── */
+    .quote-section {
+      padding: 6rem 2rem;
+      text-align: center;
+      background: var(--deep);
+      position: relative;
+      overflow: hidden;
+    }
+    .quote-section::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: radial-gradient(ellipse 60% 80% at 50% 50%, #5a3520 0%, transparent 70%);
+    }
+    blockquote {
+      position: relative;
+      z-index: 1;
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(1.6rem, 4vw, 3rem);
+      font-style: italic;
+      color: var(--parchment);
+      max-width: 800px;
+      margin-inline: auto;
+      line-height: 1.5;
+    }
+    blockquote cite {
+      display: block;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 0.85rem;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--warm);
+      margin-top: 2rem;
+      font-style: normal;
+    }
+
+    /* ─── RITUAL ─────────────────────────────────────────── */
+    .ritual-section {
+      padding: 8rem 2rem;
+      background: var(--parchment);
+    }
+    .ritual-inner {
+      max-width: 1100px;
+      margin-inline: auto;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6rem;
+      align-items: center;
+    }
+    @media (max-width: 700px) {
+      .ritual-inner { grid-template-columns: 1fr; gap: 3rem; }
+    }
+    .ritual-steps { counter-reset: step; }
+    .step {
+      counter-increment: step;
+      padding: 1.5rem 0;
+      border-bottom: 1px solid #d9c9b0;
+      display: flex;
+      gap: 2rem;
+      align-items: flex-start;
+    }
+    .step::before {
+      content: counter(step, decimal-leading-zero);
+      font-family: 'Playfair Display', serif;
+      font-size: 1.1rem;
+      color: var(--warm);
+      min-width: 2.5rem;
+      margin-top: 0.2rem;
+    }
+    .step h4 {
+      font-family: 'Playfair Display', serif;
+      font-weight: 400;
+      font-size: 1.2rem;
+      color: var(--deep);
+      margin-bottom: 0.4rem;
+    }
+    .step p { font-size: 0.9rem; line-height: 1.8; color: var(--amber); font-weight: 300; }
+
+    .ritual-title {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(2.5rem, 6vw, 4.5rem);
+      font-weight: 400;
+      line-height: 1.1;
+      color: var(--deep);
+    }
+    .ritual-title em { font-style: italic; color: var(--amber); }
+    .ritual-body {
+      font-size: 1rem;
+      line-height: 1.9;
+      color: var(--amber);
+      margin-top: 1.5rem;
+      font-weight: 300;
+      max-width: 380px;
+    }
+
+    /* ─── FOOTER ─────────────────────────────────────────── */
+    footer {
+      padding: 4rem 2rem;
+      text-align: center;
+      border-top: 1px solid var(--parchment);
+    }
+    footer p { font-size: 0.8rem; letter-spacing: 0.2em; color: var(--warm); text-transform: uppercase; }
+
+    /* ─── SCROLL REVEAL ──────────────────────────────────── */
+    .reveal {
+      opacity: 0;
+      transform: translateY(30px);
+      transition: opacity 0.9s ease, transform 0.9s ease;
+    }
+    .reveal.visible { opacity: 1; transform: none; }
+  </style>
+</head>
+<body>
+
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="ring"></div>
+  <div class="ring"></div>
+  <div class="ring"></div>
+  <div class="ring"></div>
+
+  <div class="steam-container">
+    <div class="steam-line"></div>
+    <div class="steam-line"></div>
+    <div class="steam-line"></div>
+  </div>
+
+  <!-- Floating teacup -->
+  <div class="teacup-wrap">
+    <svg width="120" height="90" viewBox="0 0 120 90" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <!-- saucer -->
+      <ellipse cx="60" cy="80" rx="50" ry="8" fill="#d9c4a3" opacity="0.7"/>
+      <!-- cup body -->
+      <path d="M25 35 Q28 70 60 72 Q92 70 95 35 Z" fill="#e8d0b0"/>
+      <path d="M25 35 Q28 70 60 72 Q92 70 95 35 Z" fill="url(#teaFill)" opacity="0.5"/>
+      <!-- cup rim -->
+      <ellipse cx="60" cy="35" rx="35" ry="8" fill="#f0dfc0"/>
+      <!-- tea surface -->
+      <ellipse cx="60" cy="36" rx="32" ry="6.5" fill="#a0714f" opacity="0.7"/>
+      <!-- handle -->
+      <path d="M95 42 Q115 42 115 55 Q115 68 95 65" stroke="#d9c4a3" stroke-width="6" fill="none" stroke-linecap="round"/>
+      <!-- shine -->
+      <ellipse cx="40" cy="50" rx="4" ry="8" fill="white" opacity="0.15" transform="rotate(-15 40 50)"/>
+      <defs>
+        <linearGradient id="teaFill" x1="60" y1="35" x2="60" y2="72" gradientUnits="userSpaceOnUse">
+          <stop stop-color="#c8a97e"/>
+          <stop offset="1" stop-color="#7a4f2c"/>
+        </linearGradient>
+      </defs>
+    </svg>
+  </div>
+
+  <div class="hero-content">
+    <p class="eyebrow">A love letter to the leaf</p>
+    <h1>I<br><em>Love</em><br>Tea.</h1>
+    <p class="subtitle">Where warmth meets wonder — a quiet ritual for the soul.</p>
+  </div>
+
+  <div class="scroll-hint">
+    <div class="scroll-line"></div>
+    Steep deeper
+  </div>
+</section>
+
+<!-- VARIETIES -->
+<section class="section reveal">
+  <p class="section-label">The collection</p>
+  <div class="teas-grid">
+    <div class="tea-card" data-num="I">
+      <div class="tea-dot" style="background: radial-gradient(circle at 35% 35%, #c9a87d, #6b3a1f);"></div>
+      <h3>Darjeeling</h3>
+      <p>The champagne of teas. Floral muscatel notes drift from first flush leaves plucked at altitude.</p>
+    </div>
+    <div class="tea-card" data-num="II">
+      <div class="tea-dot" style="background: radial-gradient(circle at 35% 35%, #3e7a55, #1e3d2b);"></div>
+      <h3>Matcha</h3>
+      <p>Stone-ground tranquility. Umami whispers beneath bright grassy sweetness, held in a jade bowl.</p>
+    </div>
+    <div class="tea-card" data-num="III">
+      <div class="tea-dot" style="background: radial-gradient(circle at 35% 35%, #d4956b, #8b3e1a);"></div>
+      <h3>Oolong</h3>
+      <p>Half-way between worlds — roasted and floral at once, a tea that changes with every steep.</p>
+    </div>
+    <div class="tea-card" data-num="IV">
+      <div class="tea-dot" style="background: radial-gradient(circle at 35% 35%, #e8c87a, #9c6f1c);"></div>
+      <h3>Chamomile</h3>
+      <p>Sun-dried meadow in a cup. Honey-soft and eternally patient, for evenings that deserve ceremony.</p>
+    </div>
+  </div>
+</section>
+
+<!-- QUOTE -->
+<section class="quote-section reveal">
+  <blockquote>
+    "There is something in the nature of tea that leads us into a world of quiet contemplation of life."
+    <cite>— Lin Yutang</cite>
+  </blockquote>
+</section>
+
+<!-- RITUAL -->
+<section class="ritual-section reveal">
+  <div class="ritual-inner">
+    <div>
+      <h2 class="ritual-title">The Art of the<br><em>Perfect Steep</em></h2>
+      <p class="ritual-body">Tea is not brewed — it is coaxed. Each variety asks for a slightly different temperature, a different patience, a different silence.</p>
+    </div>
+    <div class="ritual-steps">
+      <div class="step">
+        <div>
+          <h4>Warm the Vessel</h4>
+          <p>Pour hot water into your cup or pot first, then discard. Cold porcelain steals heat before the first note can bloom.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div>
+          <h4>Choose Your Water</h4>
+          <p>Soft, filtered water at the right temperature — never boiling for delicate leaves. 70–85°C for greens; 90–95°C for blacks.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div>
+          <h4>Measure Generously</h4>
+          <p>One teaspoon per cup, but trust your nose. The dry leaf tells you everything about what it will become.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div>
+          <h4>Honour the Time</h4>
+          <p>Set a timer. Walk away. Return when ready. Oversteeping is grief; understeeping is impatience.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="reveal">
+  <svg width="40" height="40" viewBox="0 0 40 40" fill="none" style="margin-bottom:1rem;opacity:0.4">
+    <path d="M20 5 Q23 15 20 25 Q17 15 20 5Z" fill="#a0714f"/>
+    <path d="M12 10 Q20 18 18 30 Q12 22 12 10Z" fill="#a0714f"/>
+    <path d="M28 10 Q20 18 22 30 Q28 22 28 10Z" fill="#a0714f"/>
+  </svg>
+  <p>Brewed with love &nbsp;·&nbsp; Every cup, a quiet miracle</p>
+</footer>
+
+<script>
+  // Custom cursor
+  const cursor = document.getElementById('cursor');
+  const ring = document.getElementById('cursorRing');
+  let mx = 0, my = 0, rx = 0, ry = 0;
+  document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; });
+  (function animate() {
+    cursor.style.left = mx + 'px';
+    cursor.style.top  = my + 'px';
+    rx += (mx - rx) * 0.12;
+    ry += (my - ry) * 0.12;
+    ring.style.left = rx + 'px';
+    ring.style.top  = ry + 'px';
+    requestAnimationFrame(animate);
+  })();
+
+  // Scroll reveal
+  const reveals = document.querySelectorAll('.reveal');
+  const io = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); io.unobserve(e.target); } });
+  }, { threshold: 0.12 });
+  reveals.forEach(el => io.observe(el));
+</script>
+</body>
+</html>
